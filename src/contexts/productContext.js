@@ -13,6 +13,8 @@ export const ProductContext = createContext ({
     addProduct: () => {},
     updateProduct: () => {},
     deleteProduct: () => {},
+    clickModal: () => {},
+    isModal: false,
     loaded: false,
     loading: false,
     error: null,
@@ -23,22 +25,17 @@ export const ProductProvider = (props) => {
     const [loaded, setLoaded] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [products, setProducts] = useState([])
+    const [products, setProducts] = useState([]);
+    const [isModal, setIsModal] = useState(false);
 
-    useEffect(()=>{
-
-    },[]);
-
-const { addToast } = useToasts();
-
+    const { addToast } = useToasts();
 
     const getProducts = useCallback(async()=>{
-        if (loading || loaded || error){
-            console.log('error', error);
-            return;
-        } else {
-            setLoading(true);
+        if (loading || loaded || error) {
+        return;
         }
+
+        setLoading();
 
         const query = `query Skincares {
             skincares {
@@ -71,12 +68,13 @@ const { addToast } = useToasts();
                 setProducts(results.data.skincares)
             }
         } catch(err) {
-            console.log(err)
+            console.log(err);
+            setError(err);
         } finally {
             setLoading(false);
             setLoaded(true);
         }
-    },[ setLoading, setLoaded, setProducts, loading, loaded, error] );
+    },[ setLoading, setLoaded, setProducts, setError, loading, loaded, error] );
 
     const addProduct = useCallback(async(formData)=>{
         const query = `mutation CreateSkincare($data:SkincareCreateInput!){
@@ -106,12 +104,13 @@ const { addToast } = useToasts();
             const newProducts = getProducts();
             localStorage.setItem('products', newProducts);
             setProducts(newProducts);
-            addToast(`${results.data.createSkincare.productName} (${results.data.createSkincare.brandName}) successfully deleted`, {appearance: 'success'});
+            addToast(`${results.data.createSkincare.productName} (${results.data.createSkincare.brandName}) successfully added`, {appearance: 'success'});
         }
     } catch (err) {
-            console.log(err)
+            const e = err.body
+            console.log(e);
         }
-    },[setProducts])
+    },[setProducts, addToast, getProducts])
 
     const deleteProduct = useCallback(async(id)=>{
         const query = `
@@ -131,7 +130,7 @@ const { addToast } = useToasts();
                 body: JSON.stringify({
                     query: query, 
                     variables: {
-                        data: {id: id}
+                        where: {id: id}
                     }
                 })
             })
@@ -145,18 +144,73 @@ const { addToast } = useToasts();
                 const updatedProducts = [...products.slice(0, index), ...products.slice(index + 1)];
                 localStorage.setItem('products', JSON.stringify(updatedProducts));
                 setProducts(updatedProducts);
+                setIsModal(false);
                 addToast(`${deletedProduct.productName} (${deletedProduct.brandName}) successfully deleted`, {appearance: 'success'});
             }
         } catch (err) {
             console.log(err)
         }
-    },[products, setProducts])
+    },[products, setProducts, addToast])
+
+    const updateProduct = useCallback(async(id, formData)=>{
+        const query = `
+        mutation UpdateSkincare($where:SkincareWhereUniqueInput!, $data:SkincareUpdateInput!){
+            updateSkincare(where:$where,data:$data){
+                id
+                productName
+                brandName
+                productType
+                activeIngredient
+                keyFeature
+                timeOfUse
+                frequencyOfUse
+                description
+                }
+            }
+        `
+        try{
+            const response = await fetch(graphqlEndpoint,{
+                method: "POST",
+                headers: headers,
+                body: JSON.stringify({
+                    query: query, 
+                    variables: {
+                        where: {id: id},
+                        data: formData
+                    }
+                })
+            })
+            if(!response.ok){
+                throw response;
+            } else {
+                const results = await response.json();
+                console.log(results.data.updateSkincare);
+                const newProduct = results.data.updateSkincare 
+                const index = products.findIndex((product) => product._id === id);
+                const oldProduct = products[index];
+                const newProducts = [...products.slice(0, index), ...products.slice(index + 1)];
+                newProducts.push(newProduct);
+                localStorage.setItem('products', JSON.stringify(newProducts));
+                setProducts(newProducts);
+                addToast(`${oldProduct.productName} (${oldProduct.brandName}) successfully updated`, {appearance: 'success'});
+            }
+        } catch(err) {
+            console.log(err)
+        }
+    },[products, setProducts, addToast])
+
+    const clickModal = () => {
+        setIsModal(!isModal);
+    };
 
     return (
         <ProductContext.Provider value={{
             getProducts,
             addProduct,
             deleteProduct,
+            updateProduct,
+            clickModal,
+            isModal,
             loading,
             loaded,
             error,

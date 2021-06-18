@@ -1,9 +1,16 @@
-import React, { useEffect, useContext} from 'react';
-import { ProductContext } from './../../contexts/productContext'
+import React, { useEffect, useContext, useState, useCallback } from 'react';
+import { ProductContext } from './../../contexts/productContext';
+import './ProductList.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { NavLink } from 'react-router-dom';
+import DeleteModal from './../DeleteModal/DeleteModal';
+import './ProductList.css'
 
 export default function ProductList(){
     const {
         getProducts,
+        clickModal,
+        isModal,
         loading,
         loaded,
         error,
@@ -26,9 +33,31 @@ export default function ProductList(){
         return <p>No products to view</p>
     }
 
+    function standardiseEnums(arr){
+        const newArr = []
+        for (const a of arr){
+            const b = a.slice(1)
+            switch(b){
+                case 'nti_acne':
+                case 'nti_ageing': {
+                    let c = a.charAt(0).toUpperCase()+ b.replace('_','-');
+                    newArr.push(c);
+                    break;
+                }
+                default: {
+                    let c = a.charAt(0).toUpperCase()+ b.replace(/_/g,' ');
+                    newArr.push(c);
+                    break;
+                }
+            }
+        }
+        return newArr;
+    }
+
     return(
-        <div>
-            {products.forEach(({
+        <div className="columns is-multiline m-3">
+        <DeleteModal />
+            {products.map(({
                 id,
                 productName,
                 brandName,
@@ -40,30 +69,62 @@ export default function ProductList(){
                 description
             }) => {
                 return (
-                <div class="card" key={id}>
-                    <header class="card-header">
-                        <h4>{brandName}</h4>
-                        <h3>{productName}</h3>
-                    </header>
-                    <div class="card-content">
-                        <ul>
-                            <li>{productType}</li>
-                            <li>{activeIngredient}</li>
-                            <li>{keyFeature}</li>
-                            <li>{timeOfUse}</li>
-                            <li>{frequencyOfUse}</li>
-                            <li>{description}</li>
-                        </ul>
+                    <div className="column is-one-third">
+                        <div className="card" key={id}>
+                            <header className="card-header px-5 has-background-primary-light">
+                                <div className="card-title">
+                                    <h4 className="is-size-5 has-text-weight-semibold">{brandName}</h4>
+                                    <h3 className="is-size-4 has-text-weight-bold">{productName}</h3>
+                                </div>
+                            </header>
+                            <div className="product-ul card-content">
+                                <ul className="has-text-centered">
+                                    {productType.length>0 && 
+                                    <li>
+                                        <FontAwesomeIcon icon="flask"/>
+                                        {` ${standardiseEnums(productType)}`}
+                                    </li>}
+                                    {activeIngredient.length>0 && 
+                                    <li>
+                                        <FontAwesomeIcon icon="eye-dropper"/>
+                                        {` ${activeIngredient}`}
+                                    </li>}
+                                    {keyFeature.length>0 && 
+                                    <li>
+                                        <FontAwesomeIcon icon="cog"/>
+                                        {` ${standardiseEnums(keyFeature)}`}
+                                    </li>}
+                                    {timeOfUse.length>0 &&
+                                    <li>
+                                        <FontAwesomeIcon icon="clock"/>
+                                        {` ${standardiseEnums(timeOfUse)}`}
+                                    </li>}
+                                    {frequencyOfUse!=="" &&
+                                    <li>
+                                        <FontAwesomeIcon icon="calendar-check" />
+                                        {` ${frequencyOfUse}`}
+                                    </li>}
+                                    {description!=="" &&
+                                    <li>
+                                        <FontAwesomeIcon icon="sticky-note"/>
+                                        {` ${description}`}
+                                    </li>}
+                                </ul>
+                            </div>
+                            <div className="card-footer has-background-link-light">
+                                <span className="card-footer-item icon">
+                                    <NavLink to={`/${id}`}>
+                                        <FontAwesomeIcon icon="edit" title="Edit" />
+                                    </NavLink>
+                                </span>
+                                <span className="card-footer-item icon">
+                                    <a className="button is-ghost" onClick={clickModal}>
+                                        <FontAwesomeIcon icon="trash-alt" title="Delete" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <span class="card-footer-item icon">
-                            <i class="fas fa-edit"></i>
-                        </span>
-                        <span class="card-footer-item icon">
-                            <i class="fas fa-trash-alt"></i>
-                        </span>
-                    </div>
-                </div>
                 )
             })}
         </div>
