@@ -39,20 +39,18 @@ library.add(
 function App() {
   return (
     <div className="App">
-      <ErrorBoundary>
-        <Router>
-          <ToastProvider autoDismiss={true}>
-            <ProductProvider>
-              <Switch>
-                <Route exact path='/' component={Home}/>
-                <Route path="/add" component={AddProduct}/>
-                <Route path="/:id" component={UpdateProduct}/>
-                <Route path="*" component={NotFound} />
-              </Switch>
-            </ProductProvider>
-          </ToastProvider>
-        </Router>
-      </ErrorBoundary>
+      <Router>
+        <ToastProvider autoDismiss={true}>
+          <ProductProvider>
+            <Switch>
+              <Route exact path='/' component={Home}/>
+              <Route path="/add" component={AddProduct}/>
+              <Route path="/:id" component={UpdateProduct}/>
+              <Route path="*" component={NotFound} />
+            </Switch>
+          </ProductProvider>
+        </ToastProvider>
+      </Router>
     </div>
   );
 }

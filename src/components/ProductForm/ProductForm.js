@@ -48,6 +48,7 @@ export default function ProductForm( {initialValues} ){
             const activeArr = []
             if(formData.activeIngredient){
                 const active = formData.activeIngredient;
+                console.log('active',active);
                 const activeSplit = active.split(',');
                 activeArr.push(...activeSplit);
             };
@@ -72,7 +73,7 @@ export default function ProductForm( {initialValues} ){
 
 
         if(populated){
-            const updates = {};
+            let updates = {};
             for (const key in initialValues) {
                 if (initialValues.hasOwnProperty(key)) {
                 if (initialValues[key] !== formValues[key] && key[0] !== "_") {
@@ -80,7 +81,7 @@ export default function ProductForm( {initialValues} ){
                 }
                 }
             }
-            transformFormData(updates);
+            updates = transformFormData(updates);
             console.log("updates", updates);
             updateProduct(id, updates);
         } else {

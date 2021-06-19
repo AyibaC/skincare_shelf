@@ -13,7 +13,8 @@ export default function ProductList(){
         isModal,
         loading,
         loaded,
-        products
+        products,
+        identifier
     } = useContext(ProductContext);
 
     useEffect(()=>{
@@ -68,8 +69,8 @@ export default function ProductList(){
             }) => {
                 return (
                     <div className="column is-one-third">
-                        <DeleteModal key={id+productName} id={id}/>
                         <div className="card" key={id}>
+                            <DeleteModal id={id} />
                             <header className="card-header px-5 has-background-primary-light">
                                 <div className="card-title">
                                     <h4 className="is-size-5 has-text-weight-semibold">{brandName}</h4>
@@ -117,7 +118,7 @@ export default function ProductList(){
                                     </NavLink>
                                 </span>
                                 <span className="card-footer-item icon">
-                                    <a className="button is-ghost" onClick={clickModal(id)}>
+                                    <a id={id} className="button is-ghost" onClick={(e)=>clickModal(e)}>
                                         <FontAwesomeIcon icon="trash-alt" title="Delete" />
                                     </a>
                                 </span>

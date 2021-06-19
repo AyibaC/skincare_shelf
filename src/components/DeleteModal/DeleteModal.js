@@ -1,17 +1,18 @@
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useContext, useEffect, useParams, useState, useCallback } from 'react';
 import { ProductContext } from './../../contexts/productContext';
 
-export default function DeleteModal({id}){
-    const { getProducts, products, deleteProduct, loaded, loading, isModal, clickModal } = useContext(ProductContext);
+export default function DeleteModal(){
+
+    const { getProducts, products, deleteProduct, loaded, loading, isModal, clickModal, identifier } = useContext(ProductContext);
 
     useEffect(() => {
         if (!loaded && !loading) {
             getProducts();
             } 
         }, [loaded, getProducts, products, loading]);
-        
+
     console.log('products', products)
-    const productToBeDeleted = products.find((product) => product.id === id);
+    const productToBeDeleted = products.find((product) => product.id === identifier);
     console.log('product to be deleted' ,productToBeDeleted)
 
     const active = isModal ? "is-active" : "";
@@ -24,7 +25,7 @@ export default function DeleteModal({id}){
                     <p>Are you sure you want to delete this product?</p>
                 </div>
                 <div className="modal-card-foot">
-                    <button className="button is-primary" onClick={() => deleteProduct(id)}>Delete</button>
+                    <button className="button is-primary" onClick={()=>deleteProduct(identifier)}>Delete</button>
                     <button className="button is-light" onClick={clickModal}>Cancel</button>
                 </div>
             </div>

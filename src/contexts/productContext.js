@@ -18,7 +18,8 @@ export const ProductContext = createContext ({
     loaded: false,
     loading: false,
     error: null,
-    products: []
+    products: [],
+    identifier: ""
 });
 
 export const ProductProvider = (props) => {
@@ -27,6 +28,7 @@ export const ProductProvider = (props) => {
     const [error, setError] = useState(null);
     const [products, setProducts] = useState([]);
     const [isModal, setIsModal] = useState(false);
+    const [identifier, setIdentifier] = useState("");
 
     const { addToast } = useToasts();
 
@@ -229,7 +231,11 @@ export const ProductProvider = (props) => {
         }
     },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
 
-    const clickModal = ()=>{
+    const clickModal = (e)=>{
+        if(e){
+            console.log('target', e.target)
+            setIdentifier(e.target.id);
+        }
         setIsModal(!isModal);
     };
 
@@ -244,7 +250,8 @@ export const ProductProvider = (props) => {
             loading,
             loaded,
             error,
-            products
+            products,
+            identifier
         }}>
             {props.children}
         </ProductContext.Provider>
