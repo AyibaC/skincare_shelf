@@ -13,7 +13,6 @@ export default function ProductList(){
         isModal,
         loading,
         loaded,
-        error,
         products
     } = useContext(ProductContext);
 
@@ -56,7 +55,6 @@ export default function ProductList(){
 
     return(
         <div className="columns is-multiline m-3">
-        <DeleteModal />
             {products.map(({
                 id,
                 productName,
@@ -70,6 +68,7 @@ export default function ProductList(){
             }) => {
                 return (
                     <div className="column is-one-third">
+                        <DeleteModal key={id+productName} id={id}/>
                         <div className="card" key={id}>
                             <header className="card-header px-5 has-background-primary-light">
                                 <div className="card-title">
@@ -118,7 +117,7 @@ export default function ProductList(){
                                     </NavLink>
                                 </span>
                                 <span className="card-footer-item icon">
-                                    <a className="button is-ghost" onClick={clickModal}>
+                                    <a className="button is-ghost" onClick={clickModal(id)}>
                                         <FontAwesomeIcon icon="trash-alt" title="Delete" />
                                     </a>
                                 </span>

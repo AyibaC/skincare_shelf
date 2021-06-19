@@ -8,14 +8,14 @@ import { NavLink } from 'react-router-dom';
 
 export default function UpdateProduct(){
     let { id } = useParams();
-    const {products, getProducts, loaded} = useContext(ProductContext)
+    const {products, getProducts, loaded, loading} = useContext(ProductContext)
     
     useEffect(() => {
-        console.log("in useEffect", products, loaded);
-        if (!loaded) {
+        console.log("in useEffect", products, loaded, loading);
+        if (!loaded && !loading) {
             getProducts();
             }
-        }, [loaded, getProducts, products]);
+        }, [loaded, loading, getProducts, products]);
     console.log('products', products)
     const productToBeUpdated = products.find((product) => product.id === id);
     console.log('product to be updated' ,productToBeUpdated)

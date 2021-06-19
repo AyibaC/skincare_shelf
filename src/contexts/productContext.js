@@ -35,7 +35,7 @@ export const ProductProvider = (props) => {
         return;
         }
 
-        setLoading();
+        setLoading(true);
 
         const query = `query Skincares {
             skincares {
@@ -77,6 +77,12 @@ export const ProductProvider = (props) => {
     },[ setLoading, setLoaded, setProducts, setError, loading, loaded, error] );
 
     const addProduct = useCallback(async(formData)=>{
+        if (loading || loaded || error) {
+            return;
+            }
+    
+        setLoading(true);
+
         const query = `mutation CreateSkincare($data:SkincareCreateInput!){
             createSkincare(data:$data){
                 id
@@ -104,15 +110,25 @@ export const ProductProvider = (props) => {
             const newProducts = getProducts();
             localStorage.setItem('products', newProducts);
             setProducts(newProducts);
+            //setIsModal(false);
             addToast(`${results.data.createSkincare.productName} (${results.data.createSkincare.brandName}) successfully added`, {appearance: 'success'});
         }
     } catch (err) {
-            const e = err.body
-            console.log(e);
+            console.log(err);
+            setError(err);
+        } finally {
+            setLoading(false);
+            setLoaded(true);
         }
-    },[setProducts, addToast, getProducts])
+    },[setProducts, addToast, getProducts, loading, loaded, error, setLoaded, setLoading, setError])
 
     const deleteProduct = useCallback(async(id)=>{
+        if (loading || loaded || error) {
+            return;
+            }
+    
+        setLoading(true);
+
         const query = `
         mutation DeleteSkincare($where:SkincareWhereUniqueInput!){
             deleteSkincare(where:$where){
@@ -144,15 +160,25 @@ export const ProductProvider = (props) => {
                 const updatedProducts = [...products.slice(0, index), ...products.slice(index + 1)];
                 localStorage.setItem('products', JSON.stringify(updatedProducts));
                 setProducts(updatedProducts);
-                setIsModal(false);
+                // setIsModal(false);
                 addToast(`${deletedProduct.productName} (${deletedProduct.brandName}) successfully deleted`, {appearance: 'success'});
             }
         } catch (err) {
-            console.log(err)
+            console.log(err);
+            setError(err);
+        } finally {
+            setLoading(false);
+            setLoaded(true);
         }
-    },[products, setProducts, addToast])
+    },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
 
     const updateProduct = useCallback(async(id, formData)=>{
+        if (loading || loaded || error) {
+            return;
+            }
+    
+        setLoading(true);
+
         const query = `
         mutation UpdateSkincare($where:SkincareWhereUniqueInput!, $data:SkincareUpdateInput!){
             updateSkincare(where:$where,data:$data){
@@ -194,12 +220,16 @@ export const ProductProvider = (props) => {
                 setProducts(newProducts);
                 addToast(`${oldProduct.productName} (${oldProduct.brandName}) successfully updated`, {appearance: 'success'});
             }
-        } catch(err) {
-            console.log(err)
+        } catch (err) {
+            console.log(err);
+            setError(err);
+        } finally {
+            setLoading(false);
+            setLoaded(true);
         }
-    },[products, setProducts, addToast])
+    },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
 
-    const clickModal = () => {
+    const clickModal = ()=>{
         setIsModal(!isModal);
     };
 

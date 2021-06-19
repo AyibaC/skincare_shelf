@@ -4,6 +4,7 @@ import {
   Switch
 } from 'react-router-dom';
 import './App.css';
+import ErrorBoundary from './ErrorBoundary';
 import Home from './pages/home/home.js'; 
 import AddProduct from './pages/addProduct/addProduct.js';
 import UpdateProduct from './pages/updateProduct/updateProduct';
@@ -38,18 +39,20 @@ library.add(
 function App() {
   return (
     <div className="App">
-      <Router>
-      <ToastProvider autoDismiss={true}>
-          <ProductProvider>
-            <Switch>
-              <Route exact path='/' component={Home}/>
-              <Route path="/add" component={AddProduct}/>
-              <Route path="/:id" component={UpdateProduct}/>
-              <Route path="*" component={NotFound} />
-            </Switch>
-          </ProductProvider>
-        </ToastProvider>
-      </Router>
+      <ErrorBoundary>
+        <Router>
+          <ToastProvider autoDismiss={true}>
+            <ProductProvider>
+              <Switch>
+                <Route exact path='/' component={Home}/>
+                <Route path="/add" component={AddProduct}/>
+                <Route path="/:id" component={UpdateProduct}/>
+                <Route path="*" component={NotFound} />
+              </Switch>
+            </ProductProvider>
+          </ToastProvider>
+        </Router>
+      </ErrorBoundary>
     </div>
   );
 }
