@@ -11,9 +11,10 @@ export default function DeleteModal(){
             } 
         }, [loaded, getProducts, products, loading]);
 
-    console.log('products', products)
+    console.log('identifier', identifier);
+    console.log('products', products);
     const productToBeDeleted = products.find((product) => product.id === identifier);
-    console.log('product to be deleted' ,productToBeDeleted)
+    console.log('product to be deleted' ,productToBeDeleted);
 
     const active = isModal ? "is-active" : "";
 

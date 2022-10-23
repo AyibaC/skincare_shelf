@@ -32,10 +32,11 @@ export const ProductProvider = (props) => {
 
     const { addToast } = useToasts();
 
+
     const getProducts = useCallback(async()=>{
-        if (loading || loaded || error) {
-        return;
-        }
+        // if (loading || loaded || error) {
+        // return;
+        // }
 
         setLoading(true);
 
@@ -79,9 +80,11 @@ export const ProductProvider = (props) => {
     },[ setLoading, setLoaded, setProducts, setError, loading, loaded, error] );
 
     const addProduct = useCallback(async(formData)=>{
-        if (loading || loaded || error) {
-            return;
-            }
+        console.log('product to be added', formData);
+        // if (loading || loaded || error) {
+        //     console.log('loading:', loading, 'loaded:', loaded, "error:", error)
+        //     return;
+        //     }
     
         setLoading(true);
 
@@ -118,16 +121,17 @@ export const ProductProvider = (props) => {
     } catch (err) {
             console.log(err);
             setError(err);
+            addToast('Product not added, please try again.', { appearance: 'error' });
         } finally {
             setLoading(false);
             setLoaded(true);
         }
     },[setProducts, addToast, getProducts, loading, loaded, error, setLoaded, setLoading, setError])
 
-    const deleteProduct = useCallback(async(id)=>{
-        if (loading || loaded || error) {
-            return;
-            }
+    const deleteProduct = useCallback(async(ID)=>{
+        // if (loading || loaded || error) {
+        //     return;
+        //     }
     
         setLoading(true);
 
@@ -148,7 +152,7 @@ export const ProductProvider = (props) => {
                 body: JSON.stringify({
                     query: query, 
                     variables: {
-                        where: {id: id}
+                        where: {id: ID}
                     }
                 })
             })
@@ -157,17 +161,17 @@ export const ProductProvider = (props) => {
             } else {
                 const results = await response.json();
                 console.log(results.data.deleteSkincare);
-                const index = products.findIndex((product) => product._id === id);
+                const index = products.findIndex((product) => product.id === ID);
                 const deletedProduct = products[index];
                 const updatedProducts = [...products.slice(0, index), ...products.slice(index + 1)];
                 localStorage.setItem('products', JSON.stringify(updatedProducts));
                 setProducts(updatedProducts);
-                // setIsModal(false);
+                setIsModal(false);
                 addToast(`${deletedProduct.productName} (${deletedProduct.brandName}) successfully deleted`, {appearance: 'success'});
             }
         } catch (err) {
             console.log(err);
-            setError(err);
+            setError('Product not deleted, please try again.', { appearance: 'error' });
         } finally {
             setLoading(false);
             setLoaded(true);
@@ -175,9 +179,11 @@ export const ProductProvider = (props) => {
     },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
 
     const updateProduct = useCallback(async(id, formData)=>{
-        if (loading || loaded || error) {
-            return;
-            }
+        // if (loading || loaded || error) {
+        //     return;
+        //     };
+
+        console.log('context form data',formData)
     
         setLoading(true);
 
@@ -214,7 +220,8 @@ export const ProductProvider = (props) => {
                 const results = await response.json();
                 console.log(results.data.updateSkincare);
                 const newProduct = results.data.updateSkincare 
-                const index = products.findIndex((product) => product._id === id);
+                const index = products.findIndex((product) => product.id === id);
+                console.log('index', index);
                 const oldProduct = products[index];
                 const newProducts = [...products.slice(0, index), ...products.slice(index + 1)];
                 newProducts.push(newProduct);
@@ -225,6 +232,7 @@ export const ProductProvider = (props) => {
         } catch (err) {
             console.log(err);
             setError(err);
+            addToast('Product not updated, please try again.', { appearance: 'error' });
         } finally {
             setLoading(false);
             setLoaded(true);
@@ -233,8 +241,9 @@ export const ProductProvider = (props) => {
 
     const clickModal = (e)=>{
         if(e){
-            console.log('target', e.target)
-            setIdentifier(e.target.id);
+            console.log('target', e.currentTarget)
+            setIdentifier(e.currentTarget.dataset.productId);
+            console.log('click modal identifier', identifier);
         }
         setIsModal(!isModal);
     };

@@ -3,8 +3,8 @@ import {
   Route,
   Switch
 } from 'react-router-dom';
+import {Helmet} from "react-helmet";
 import './App.css';
-import ErrorBoundary from './ErrorBoundary';
 import Home from './pages/home/home.js'; 
 import AddProduct from './pages/addProduct/addProduct.js';
 import UpdateProduct from './pages/updateProduct/updateProduct';
@@ -24,6 +24,7 @@ import {
           faLongArrowAltLeft
       } from '@fortawesome/free-solid-svg-icons';
 
+
 library.add(
   faEdit, 
   faTrashAlt, 
@@ -39,6 +40,11 @@ library.add(
 function App() {
   return (
     <div className="App">
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Skincare Shelf</title>
+        <link rel="shortcut icon" href="public/water-droplets.png" />
+      </Helmet>
       <Router>
         <ToastProvider autoDismiss={true}>
           <ProductProvider>
