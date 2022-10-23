@@ -1,3 +1,18 @@
+# Skincare Shelf
+
+Skincare shelf is a CRUD app bootsrapped with create react app designed to help skincare junkies keep track of what's in their collection. Each card represents a product with the brand name followed by the product name in the header. Information held in the card includes:
+
+* Product Type - e.g. serum, moisturiser
+* Active Ingredient - e.g. hyaluronic acid, niacinamide
+* Key Features - what the product does for the skin e.g. exfoliating, anti-ageing
+* Time of Use - morning or evening
+* Frequency of Use - e.g. every day, once a week
+* Description - a free text box for anything else the user wants to remind themself about the product
+
+Brand Name, Product Name and Frequency of Use are required, all other options are optional.
+To add a product, navigate to the Add Product page via the menu in the header and fill out the form. To update or delete a product, use the icons in the footer of the product card you wish to edit.
+Bulma (https://bulma.io/) is the CSS framework use to create this app.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
