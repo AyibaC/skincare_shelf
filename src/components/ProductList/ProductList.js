@@ -120,11 +120,11 @@ export default function ProductList(){
                             <div className="product-ul card-content">
                                 <ul>
                                     {productType.length>0 && 
-                                    <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
-                                        <FontAwesomeIcon icon="flask"/>
-                                        {` ${standardiseEnums(productType)} `}
-                                        <span className="tag is-primary is-sr-only mr-1" >Product Type</span>
-                                    </li>}
+                                        <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
+                                            <FontAwesomeIcon icon="flask"/>
+                                            {` ${standardiseEnums(productType)} `}
+                                            <span className="tag is-primary is-sr-only mr-1" >Product Type</span>
+                                        </li>}
                                     {activeIngredient.length>0 && !activeIngredient.includes('') && 
                                     <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                         <FontAwesomeIcon icon="eye-dropper"/>

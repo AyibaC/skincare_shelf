@@ -215,7 +215,8 @@ export const ProductProvider = (props) => {
                 })
             })
             if(!response.ok){
-                throw response;
+                const error = await response.json();
+                throw error;
             } else {
                 const results = await response.json();
                 console.log(results.data.updateSkincare);
@@ -224,6 +225,7 @@ export const ProductProvider = (props) => {
                 console.log('index', index);
                 const oldProduct = products[index];
                 const newProducts = [...products.slice(0, index), ...products.slice(index + 1)];
+                console.log("new product", newProduct)
                 newProducts.push(newProduct);
                 localStorage.setItem('products', JSON.stringify(newProducts));
                 setProducts(newProducts);
