@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import React, { useState } from 'react';
+import React from 'react';
 import './Header.css'
 
 export default function Header(){
@@ -12,13 +12,13 @@ export default function Header(){
                     <span className="is-size-2 has-text-primary logo-font" >Skincare Shelf</span>
                 </NavLink>
                 <a  
-                role="button" 
-                className={`navbar-burger has-text-primary ${isActive ? "is-active" : ""}`}
-                data-target="navMenu" 
-                aria-label="menu" 
-                aria-expanded="false"
-                onClick={() => {
-                    setisActive(!isActive);
+                    role="button" 
+                    className={`navbar-burger has-text-primary ${isActive ? "is-active" : ""}`}
+                    data-target="navMenu" 
+                    aria-label="menu" 
+                    aria-expanded="false"
+                    onClick={() => {
+                        setisActive(!isActive);
                 }}>
                     <span aria-hidden="true"></span>
                     <span aria-hidden="true"></span>

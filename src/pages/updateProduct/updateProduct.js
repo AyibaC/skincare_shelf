@@ -16,7 +16,7 @@ export default function UpdateProduct(){
         if (!loaded && !loading) {
             getProducts();
             }
-        }, [loaded, loading, products]);
+        }, [loaded, loading, products, getProducts]);
     console.log('products', products)
     const productToBeUpdated = products.find((product) => product.id === id);
     console.log('product to be updated' ,productToBeUpdated)

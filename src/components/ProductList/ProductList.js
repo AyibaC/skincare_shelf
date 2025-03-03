@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useCallback } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { ProductContext } from './../../contexts/productContext';
 import './ProductList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,23 +10,20 @@ export default function ProductList(){
     const {
         getProducts,
         clickModal,
-        isModal,
         loading,
         loaded,
         products,
-        identifier,
-        setIdentifier
     } = useContext(ProductContext);
 
     useEffect(()=>{
         if (!loading && !loaded){
             console.log('fetching products');
-            getProducts();
+            getProducts(`?timestamp=${new Date().getTime()}`);
         } else {
             console.log('loading', loading);
             console.log('loaded', loaded);
         }
-    }, [products, loading, loaded]);
+    }, [products, loading, loaded, getProducts]);
 
     if (loading){return (
         <div className="mt-4 is-flex is-justify-content-center">
@@ -50,26 +47,35 @@ export default function ProductList(){
     //     return;
     // };
 
+
     function standardiseEnums(arr){
+        const transform = {
+            'antiAcne': 'Anti-acne',
+            'moisturising': 'Moisturising',
+            'hydrating': 'Hydrating',
+            'sunProtection': 'Sun Protection',
+            'evenSkinTone': 'Even Skin Tone',
+            'oilControl': 'Oil Control',
+            'antiAgeing': 'Anti-ageing',
+            'brightening': 'Brightening',
+            'exfoliating': 'Exfoliating',
+            'cleansing' :'Cleansing',
+            'other': 'Other',
+            'morning': 'Morning',
+            'evening': 'Evening'
+        };
         const newArr = []
-        for (const a of arr){
-            const b = a.slice(1)
-            switch(b){
-                case 'nti_acne':
-                case 'nti_ageing': {
-                    let c = a.charAt(0).toUpperCase()+ b.replace('_','-');
-                    newArr.push(c);
-                    break;
+        for(const item of arr){
+            let features = Object.keys(transform);
+            features.forEach((feature)=>{
+                if(item===feature){
+                newArr.push(transform[feature])
                 }
-                default: {
-                    let c = a.charAt(0).toUpperCase()+ b.replace(/_/g,' ');
-                    newArr.push(c);
-                    break;
-                }
+            })
             }
-        }
-        return newArr;
-    }
+            return newArr
+        };
+
 
     // const handleDelete = (e)=>{
     //     clickModal(e);
@@ -93,19 +99,20 @@ export default function ProductList(){
     }
 
     console.log('products data type', typeof(products));
+    console.log('product state: ',products)
 
     return(
         <div className="columns is-multiline m-3">
             {products.map(({
-                id,
-                productName,
-                brandName,
-                productType,
                 activeIngredient,
-                keyFeature,
-                timeOfUse,
+                brandName,
+                description,
                 frequencyOfUse,
-                description
+                id,
+                keyFeature,
+                productName,
+                productType,
+                timeOfUse
             }) => {
                 return (
                     <div className="column is-one-third">
@@ -119,13 +126,13 @@ export default function ProductList(){
                             </header>
                             <div className="product-ul card-content">
                                 <ul>
-                                    {productType.length>0 && 
+                                    {productType && 
                                         <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                             <FontAwesomeIcon icon="flask"/>
-                                            {` ${standardiseEnums(productType)} `}
+                                            {` ${productType.charAt(0).toUpperCase() + productType.slice(1)} `}
                                             <span className="tag is-primary is-sr-only mr-1" >Product Type</span>
                                         </li>}
-                                    {activeIngredient.length>0 && !activeIngredient.includes('') && 
+                                    {activeIngredient && !activeIngredient.includes('') && 
                                     <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                         <FontAwesomeIcon icon="eye-dropper"/>
                                         {` ${activeIngredient} `}
@@ -140,16 +147,16 @@ export default function ProductList(){
                                     {timeOfUse.length>0 &&
                                     <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                         <FontAwesomeIcon icon="clock"/>
-                                        {` ${standardiseEnums(timeOfUse)} `}
+                                        {` ${standardiseEnums(timeOfUse).join(', ')} `}
                                         <span className="tag is-primary is-sr-only mr-1" >Time of Use</span>
                                     </li>}
-                                    {frequencyOfUse!=="" &&
+                                    {frequencyOfUse && frequencyOfUse!=="" &&
                                     <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                         <FontAwesomeIcon icon="calendar-check" />
                                         {` ${frequencyOfUse} `}
                                         <span className="tag is-primary is-sr-only mr-1" >Frequency of Use</span>
                                     </li>}
-                                    {description!=="" &&
+                                    {description && description!=="" &&
                                     <li onMouseOver={mouseOver} onMouseOut={mouseOut}>
                                         <FontAwesomeIcon icon="sticky-note"/>
                                         {` ${description} `}

@@ -1,42 +1,22 @@
 import './ProductForm.css'
 import React, { useContext, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { ProductContext } from './../../contexts/productContext';
 import { useParams } from "react-router-dom";
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup";
-import { render } from "@testing-library/react";
+
 
 export function populationData(data){
-    // const productTypeObj = {
-    //     "serum": false,
-    //     "moisturiser": false,
-    //     "cleanser": false,
-    //     "sun_protection": false,
-    //     "treatment": false,
-    //     "oil": false,
-    //     "mask": false,
-    //     "eye_cream": false,
-    //     "toner": false,
-    //     "essence": false,
-    //     "other": false
-    // }
-
-    // for (const p of data.productType){
-    //     if (p in productTypeObj) {
-    //         productTypeObj[p] = true
-    //     }
-    // }
-
 
     const keyFeatureObj = {
-        "anti_acne": false,
+        "antiAcne": false,
         "moisturising": false,
         "hydrating": false,
-        "sun_protection": false,
-        "even_skin_tone": false,
-        "oil_control": false,
-        "anti_ageing": false,
+        "sunProtection": false,
+        "evenSkinTone": false,
+        "oilControl": false,
+        "antiAgeing": false,
         "brightening": false,
         "exfoliating": false,
         "cleansing": false,
@@ -73,14 +53,13 @@ export function populationData(data){
 
 const schema = yup.object().shape({
     productName: yup.string().required('Product name required'),
-    brandName: yup.string().required(),
-    frequencyOfUse: yup.string().required()
+    brandName: yup.string().required()
 });
 
 export default function ProductForm( {initialValues} ){
     const { addProduct, updateProduct, loading } = useContext(ProductContext);
     const [populated, setPopulated] = useState(false);
-    const { register, handleSubmit, reset, formState, errors } = useForm({
+    const { register, handleSubmit, reset, formState } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
@@ -89,7 +68,7 @@ export default function ProductForm( {initialValues} ){
 
     console.log('loading state', loading);
 
-    const { isDirty, isValid } = formState;
+    // const { isDirty, isValid } = formState;
     // console.log('formState', formState);
     // console.log('errors', formState.errors);
 
@@ -103,7 +82,7 @@ export default function ProductForm( {initialValues} ){
     }
 
     const onSubmit = async (formValues)=>{
-        const loaderWrapper = document.querySelector('.loader-wrapper');
+        // const loaderWrapper = document.querySelector('.loader-wrapper');
         // loaderWrapper.classList.add('is-active');
         console.log('form values', formValues);
 
@@ -111,9 +90,9 @@ export default function ProductForm( {initialValues} ){
             //turn key features into array
             const keyFeatureArr = [];
             if(formData.keyFeature){
-                const keyFeatureObj = formData.keyFeature;
-                for (const f in keyFeatureObj){
-                    if(keyFeatureObj[f]===true){
+                const KFObj = formData.keyFeature;
+                for (const f in KFObj){
+                    if(KFObj[f]===true){
                         keyFeatureArr.push(f)
                     }
                 }
@@ -122,9 +101,9 @@ export default function ProductForm( {initialValues} ){
             //turn time of use into array
             const timeArr = [];
             if(formData.timeOfUse){
-                const timeObj = formData.timeOfUse;
-                for (const t in timeObj){
-                    if(timeObj[t]===true){
+                const TObj = formData.timeOfUse;
+                for (const t in TObj){
+                    if(TObj[t]===true){
                         timeArr.push(t)
                     }
                 }
@@ -140,18 +119,17 @@ export default function ProductForm( {initialValues} ){
             // };
 
             //turn product type into array
-            const typeArr = [];
-            if(formData.productType){
-                const type = formData.productType;
-                typeArr.push(type);
-            };
+            // const typeArr = [];
+            // if(formData.productType){
+            //     const type = formData.productType;
+            //     typeArr.push(type);
+            // };
 
             formData = {
                     ...formData,
                     keyFeature: keyFeatureArr,
                     timeOfUse: timeArr,
                     // activeIngredient: activeArr,
-                    productType: typeArr
             };
             console.log("updated form values", formData);
             return formData;
@@ -230,16 +208,16 @@ export default function ProductForm( {initialValues} ){
             <div className="field">
                 <label className="label" htmlFor="productType">Product Type</label>
                 <span className="select">
-                    <select name="productType" id="productType" {...register("productType")}>
+                    <select name="productType" id="productType" {...register("productType", {required: "No product type entered"})}>
                         <option value="">Select product type</option>
                         <option value="serum">Serum</option>
                         <option value="moisturiser">Moisturiser</option>
                         <option value="cleanser">Cleanser</option>
-                        <option value="sun_protection">Sun Protection</option>
+                        <option value="sunProtection">Sun Protection</option>
                         <option value="treatment">Treatment</option>
                         <option value="oil">Oil</option>
                         <option value="mask">Mask</option>
-                        <option value="eye_cream">Eye Cream</option>
+                        <option value="eyeCream">Eye Cream</option>
                         <option value="toner">Toner</option>
                         <option value="essence">Essence</option>
                         <option value="other">Other</option>
@@ -250,7 +228,7 @@ export default function ProductForm( {initialValues} ){
                 <label className="label" htmlFor="activeIngredient">Active Ingredient</label>
                 <div className="control" >
                     <div className="is-flex">
-                        <input className="input" type="text" name="activeIngredient.0" id="activeIngredient_0" {...register("activeIngredient.0")}/> 
+                        <input className="input" type="text" name="activeIngredient" id="activeIngredient" {...register("activeIngredient")}/> 
                         {/* <button className="ml-1" title="Add another" onClick={addInput}>+</button> */}
                     </div>
                 </div>
@@ -258,13 +236,13 @@ export default function ProductForm( {initialValues} ){
             <div className="field">
                 <label className="label" htmlFor="keyFeature">Key Feature(s)</label>
                 <div className="control is-flex is-flex-wrap-wrap is-justify-content-start" name="keyFeature" id="keyFeature">
-                        <label className="checkbox pl-2" htmlFor="anti_acne"><input type="checkbox" name="anti_acne" id="anti_acne" {...register("keyFeature.anti_acne")}/> Anti-acne</label>
+                        <label className="checkbox pl-2" htmlFor="anti_acne"><input type="checkbox" name="anti_acne" id="anti_acne" {...register("keyFeature.antiAcne")}/> Anti-acne</label>
                         <label className="checkbox pl-2" htmlFor="moisturising"><input type="checkbox" name="moisturising" id="moisturising" {...register("keyFeature.moisturising")}/> Moisturising</label>
                         <label className="checkbox pl-2" htmlFor="hydrating"><input type="checkbox" name="hydrating" id="hydrating" {...register("keyFeature.hydrating")}/> Hydrating</label>
-                        <label className="checkbox pl-2" htmlFor="sun_protection"><input type="checkbox" name="sun_protection" id="sun_protection" {...register("keyFeature.sun_protection")}/> Sun Protection</label>
-                        <label className="checkbox pl-2" htmlFor="even_skin_tone"><input type="checkbox" name="even_skin_tone" id="even_skin_tone" {...register("keyFeature.even_skin_tone")}/> Even Skin Tone</label>
-                        <label className="checkbox pl-2" htmlFor="oil_control"><input type="checkbox" name="oil_control" id="oil_control" {...register("keyFeature.oil_control")}/> Oil Control</label>
-                        <label className="checkbox pl-2" htmlFor="anti_ageing"><input type="checkbox" name="anti_ageing" id="anti_ageing" {...register("keyFeature.anti_ageing")}/> Anti-ageing</label>
+                        <label className="checkbox pl-2" htmlFor="sun_protection"><input type="checkbox" name="sun_protection" id="sun_protection" {...register("keyFeature.sunProtection")}/> Sun Protection</label>
+                        <label className="checkbox pl-2" htmlFor="even_skin_tone"><input type="checkbox" name="even_skin_tone" id="even_skin_tone" {...register("keyFeature.evenSkinTone")}/> Even Skin Tone</label>
+                        <label className="checkbox pl-2" htmlFor="oil_control"><input type="checkbox" name="oil_control" id="oil_control" {...register("keyFeature.oilControl")}/> Oil Control</label>
+                        <label className="checkbox pl-2" htmlFor="anti_ageing"><input type="checkbox" name="anti_ageing" id="anti_ageing" {...register("keyFeature.antiAgeing")}/> Anti-ageing</label>
                         <label className="checkbox pl-2" htmlFor="brightening"><input type="checkbox" name="brightening" id="brightening" {...register("keyFeature.brightening")}/> Brightening</label>
                         <label className="checkbox pl-2" htmlFor="exfoliating"><input type="checkbox" name="exfoliating" id="exfoliating" {...register("keyFeature.exfoliating")}/> Exfoliating</label>
                         <label className="checkbox pl-2" htmlFor="cleansing"><input type="checkbox" name="cleansing" id="cleansing" {...register("keyFeature.cleansing")}/> Cleansing</label>
@@ -281,16 +259,9 @@ export default function ProductForm( {initialValues} ){
             <div className="field">
                 <label className="label" htmlFor="frequencyOfUse">Frequency of Use</label>
                 <div className="control">
-                    {formState.errors.frequencyOfUse?
-                    <input className="input is-danger" type="text" name="frequencyOfUse" id="frequencyOfUse" {...register("frequencyOfUse", {
-                        required: "No frequency of use entered"
-                    })} />:
-                    <input className="input" type="text" name="frequencyOfUse" id="frequencyOfUse" {...register("frequencyOfUse", {
-                        required: "No frequency of use entered"
-                    })} /> }
+                    <input className="input" type="text" name="frequencyOfUse" id="frequencyOfUse" {...register("frequencyOfUse")} />
                 </div>
                 <p className="help">Every day? Every other day? Switch on for four weeks then off for two? How often do you use this product?</p>
-                {formState.errors.frequencyOfUse && <p class="help is-danger">Please enter a frequency of use</p>}
             </div>
             <div className="field">
                 <label className="label" htmlFor="description">Description</label>

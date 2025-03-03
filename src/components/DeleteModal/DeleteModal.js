@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useParams, useState, useCallback } from 'react';
+import React, { useContext, useEffect} from 'react';
 import { ProductContext } from './../../contexts/productContext';
 
 export default function DeleteModal(){
@@ -11,8 +11,6 @@ export default function DeleteModal(){
             } 
         }, [loaded, getProducts, products, loading]);
 
-    console.log('identifier', identifier);
-    console.log('products', products);
     const productToBeDeleted = products.find((product) => product.id === identifier);
     console.log('product to be deleted' ,productToBeDeleted);
 

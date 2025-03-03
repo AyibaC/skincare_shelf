@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import 'bulma/css/bulma.min.css';
 // import './fonts/Monofett/Monofett-Regular.ttf'; 
 
+
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

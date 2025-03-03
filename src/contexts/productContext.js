@@ -1,11 +1,14 @@
-import React, { useState, createContext, useEffect, useCallback } from 'react';
+import React, { useState, createContext, useCallback } from 'react';
 import { useToasts } from 'react-toast-notifications';
 
-const graphqlEndpoint = "https://api-eu-central-1.graphcms.com/v2/ckptiv255mjr301xxgonb0u6s/master"
+const ENDPOINT = process.env.REACT_APP_ENDPOINT
+const PERMANENT_AUTH_TOKEN =  process.env.REACT_APP_PERMANENT_AUTH_TOKEN
+
 
 let headers = {
     "Content-Type": "application/json",
-    "Accept": "application/json"
+    "Accept": "application/json",
+    "Authorization": PERMANENT_AUTH_TOKEN
     };
 
 export const ProductContext = createContext ({
@@ -42,25 +45,26 @@ export const ProductProvider = (props) => {
 
         const query = `query Skincares {
             skincares {
-                id
-                productName
-                brandName
-                productType
                 activeIngredient
-                keyFeature
-                timeOfUse
-                frequencyOfUse
+                brandName
                 description
+                frequencyOfUse
+                id
+                keyFeature
+                productName
+                productType
+                timeOfUse
                 }
             }
             `
-        const queryObj = { query: query }
 
         try{
-            const response = await fetch(graphqlEndpoint,{
+            const response = await fetch(ENDPOINT,{
                 method: "POST",
                 headers: headers,
-                body: JSON.stringify(queryObj)
+                body: JSON.stringify({
+                    query: query
+                })
             } )
             if(!response.ok){
                 throw response;
@@ -68,7 +72,7 @@ export const ProductProvider = (props) => {
                 const results = await response.json();
                 console.log(results.data.skincares);
                 localStorage.setItem('products', JSON.stringify(results.data.skincares));
-                setProducts(results.data.skincares)
+                setProducts(results.data.skincares);
             }
         } catch(err) {
             console.log(err);
@@ -77,7 +81,7 @@ export const ProductProvider = (props) => {
             setLoading(false);
             setLoaded(true);
         }
-    },[ setLoading, setLoaded, setProducts, setError, loading, loaded, error] );
+    },[ setLoading, setLoaded, setProducts, setError] );
 
     const addProduct = useCallback(async(formData)=>{
         console.log('product to be added', formData);
@@ -88,7 +92,7 @@ export const ProductProvider = (props) => {
     
         setLoading(true);
 
-        const query = `mutation CreateSkincare($data:SkincareCreateInput!){
+        const createQuery = `mutation CreateSkincare($data:SkincareCreateInput!){
             createSkincare(data:$data){
                 id
                 productName
@@ -96,29 +100,60 @@ export const ProductProvider = (props) => {
                 }
             }`
 
+        const publishQuery = `mutation PublishSkincare($where:SkincareWhereUniqueInput!) {
+            publishSkincare(where:$where, to: PUBLISHED) {
+                id
+                productName
+                brandName
+            }
+            }`
+
         try {
-            const response = await fetch(graphqlEndpoint,{
+            const response = await fetch(ENDPOINT,{
             method: "POST",
             headers: headers,
             body: JSON.stringify({
-                query: query, 
+                query: createQuery, 
                 variables: {
                     data: formData
                 }
             })
-        }) 
-        if(!response.ok){
-            throw response
-        } else {
-            const results = await response.json();
-            console.log(results.data.createSkincare);
-            const newProducts = getProducts();
-            localStorage.setItem('products', newProducts);
-            setProducts(newProducts);
-            //setIsModal(false);
-            addToast(`${results.data.createSkincare.productName} (${results.data.createSkincare.brandName}) successfully added`, {appearance: 'success'});
-        }
-    } catch (err) {
+            }) 
+            if(!response.ok){
+                throw response
+            } else {
+                console.log('Create query successfully run')
+                const results = await response.json();
+                try{
+                    console.log(results.data.createSkincare.id);
+                    const publishResponse = await fetch(ENDPOINT,{
+                        method: "POST",
+                        headers: headers,
+                        body: JSON.stringify({
+                            query: publishQuery, 
+                            variables: {
+                                where: {id: results.data.createSkincare.id}
+                            }
+                        })
+                    }) 
+                    if(!publishResponse.ok){
+                        throw publishResponse
+                    } else{
+                        console.log(results.data.createSkincare);
+                        const newProducts = getProducts();
+                        localStorage.setItem('products', newProducts);
+                        setProducts(newProducts);
+                        //setIsModal(false);
+                        addToast(`${results.data.createSkincare.productName} (${results.data.createSkincare.brandName}) successfully added`, {appearance: 'success'});
+                    }
+                }catch(err){
+                        console.log(err);
+                        setError(err);
+                        addToast('Product not added, please try again.', { appearance: 'error' });
+                    }
+                
+            }
+        } catch (err) {
             console.log(err);
             setError(err);
             addToast('Product not added, please try again.', { appearance: 'error' });
@@ -126,7 +161,8 @@ export const ProductProvider = (props) => {
             setLoading(false);
             setLoaded(true);
         }
-    },[setProducts, addToast, getProducts, loading, loaded, error, setLoaded, setLoading, setError])
+        
+    },[setProducts, addToast, getProducts, setLoaded, setLoading, setError])
 
     const deleteProduct = useCallback(async(ID)=>{
         // if (loading || loaded || error) {
@@ -146,7 +182,7 @@ export const ProductProvider = (props) => {
         `
 
         try{
-            const response = await fetch(graphqlEndpoint,{
+            const response = await fetch(ENDPOINT,{
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({
@@ -176,7 +212,7 @@ export const ProductProvider = (props) => {
             setLoading(false);
             setLoaded(true);
         }
-    },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
+    },[products, setProducts, addToast, setLoaded, setLoading, setError])
 
     const updateProduct = useCallback(async(id, formData)=>{
         // if (loading || loaded || error) {
@@ -187,7 +223,7 @@ export const ProductProvider = (props) => {
     
         setLoading(true);
 
-        const query = `
+        const updateQuery = `
         mutation UpdateSkincare($where:SkincareWhereUniqueInput!, $data:SkincareUpdateInput!){
             updateSkincare(where:$where,data:$data){
                 id
@@ -202,12 +238,21 @@ export const ProductProvider = (props) => {
                 }
             }
         `
+
+        const publishQuery = `mutation PublishSkincare($where:SkincareWhereUniqueInput!) {
+            publishSkincare(where:$where, to: PUBLISHED) {
+                id
+                productName
+                brandName
+            }
+            }`
+
         try{
-            const response = await fetch(graphqlEndpoint,{
+            const response = await fetch(ENDPOINT,{
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({
-                    query: query, 
+                    query: updateQuery, 
                     variables: {
                         where: {id: id},
                         data: formData
@@ -220,16 +265,30 @@ export const ProductProvider = (props) => {
             } else {
                 const results = await response.json();
                 console.log(results.data.updateSkincare);
-                const newProduct = results.data.updateSkincare 
-                const index = products.findIndex((product) => product.id === id);
-                console.log('index', index);
-                const oldProduct = products[index];
-                const newProducts = [...products.slice(0, index), ...products.slice(index + 1)];
-                console.log("new product", newProduct)
-                newProducts.push(newProduct);
-                localStorage.setItem('products', JSON.stringify(newProducts));
-                setProducts(newProducts);
-                addToast(`${oldProduct.productName} (${oldProduct.brandName}) successfully updated`, {appearance: 'success'});
+                const publishResponse = await fetch(ENDPOINT,{
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({
+                        query: publishQuery, 
+                        variables: {
+                            where: {id: results.data.updateSkincare.id}
+                        }
+                    })
+                }) 
+                if(!publishResponse.ok){
+                    throw publishResponse
+                } else{
+                    const newProduct = results.data.updateSkincare 
+                    const index = products.findIndex((product) => product.id === id);
+                    console.log('index', index);
+                    const oldProduct = products[index];
+                    const newProducts = [...products.slice(0, index), ...products.slice(index + 1)];
+                    console.log("new product", newProduct)
+                    newProducts.push(newProduct);
+                    localStorage.setItem('products', JSON.stringify(newProducts));
+                    setProducts(newProducts);
+                    addToast(`${oldProduct.productName} (${oldProduct.brandName}) successfully updated`, {appearance: 'success'});
+                }
             }
         } catch (err) {
             console.log(err);
@@ -239,7 +298,7 @@ export const ProductProvider = (props) => {
             setLoading(false);
             setLoaded(true);
         }
-    },[products, setProducts, addToast, loading, loaded, error, setLoaded, setLoading, setError])
+    },[products, setProducts, addToast, setLoaded, setLoading, setError])
 
     const clickModal = (e)=>{
         if(e){
