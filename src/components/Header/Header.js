@@ -37,6 +37,7 @@ export default function Header(){
                 <div className="navbar-end">
                 </div>
             </div>
+            <p className='mx-3'>Document all your skincare products so you don't lose track of what you have and what it does</p>
         </nav>
     )
 }
