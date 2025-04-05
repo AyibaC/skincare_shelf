@@ -1,5 +1,5 @@
-import Header from '../../components/Header/Header.js'
-import ProductList from '../../components/ProductList/ProductList'
+import Header from '../../components/Header/Header.js';
+import ProductList from '../../components/ProductList/ProductList';
 
 export default function Home(){
     return(

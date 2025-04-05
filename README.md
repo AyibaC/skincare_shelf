@@ -11,7 +11,7 @@ Skincare shelf is a CRUD app bootsrapped with create react app designed to help 
 
 Brand Name, Product Name and Frequency of Use are required, all other options are optional.
 To add a product, navigate to the Add Product page via the menu in the header and fill out the form. To update or delete a product, use the icons in the footer of the product card you wish to edit.
-Products are saved to a GraphQL (https://graphql.org/) schema and Bulma (https://bulma.io/) is used as the CSS framework.
+Products are saved to a Hygraph (https://hygraph.com/) schema and Bulma (https://bulma.io/) is used as the CSS framework.
 
 # Getting Started with Create React App
 

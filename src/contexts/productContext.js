@@ -4,7 +4,6 @@ import { useToasts } from 'react-toast-notifications';
 const ENDPOINT = process.env.REACT_APP_ENDPOINT
 const PERMANENT_AUTH_TOKEN =  process.env.REACT_APP_PERMANENT_AUTH_TOKEN
 
-
 let headers = {
     "Content-Type": "application/json",
     "Accept": "application/json",
@@ -35,11 +34,12 @@ export const ProductProvider = (props) => {
 
     const { addToast } = useToasts();
 
-
     const getProducts = useCallback(async()=>{
         // if (loading || loaded || error) {
         // return;
         // }
+
+        
 
         setLoading(true);
 
